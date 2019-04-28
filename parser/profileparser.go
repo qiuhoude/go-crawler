@@ -9,15 +9,17 @@ import (
 	"regexp"
 )
 
-const profileRe = `<script>window.__INITIAL_STATE__=(.+);\(function`
+var profileRe = regexp.MustCompile(`<script>window.__INITIAL_STATE__=(.+);\(function`)
 
 func ParseProfile(contents []byte, name string) engine.ParseResult {
-	re := regexp.MustCompile(profileRe)
-	match := re.FindSubmatch(contents)
+	match := profileRe.FindSubmatch(contents)
 	if len(match) >= 2 {
 		json := match[1]
 		//fmt.Printf("%s\n", json)
 		profile := parseJson(json)
+		if profile == nil {
+			return engine.ParseResult{}
+		}
 		profile.Name = name
 		//bytes, _ := json2.Marshal(profile)
 		//fmt.Println(string(bytes))
@@ -26,10 +28,11 @@ func ParseProfile(contents []byte, name string) engine.ParseResult {
 	return engine.ParseResult{}
 }
 
-func parseJson(json []byte) model.Profile {
+func parseJson(json []byte) *model.Profile {
 	res, err := simplejson.NewJson(json)
 	if err != nil {
 		log.Println("解析失败")
+		return nil
 	}
 	objInfo := res.Get("objectInfo")
 
@@ -72,5 +75,5 @@ func parseJson(json []byte) model.Profile {
 			}
 		}
 	}
-	return profile
+	return &profile
 }

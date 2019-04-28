@@ -1,8 +1,6 @@
 package engine
 
-import (
-	"log"
-)
+import "log"
 
 type ReadyNotifier interface {
 	WorkerReady(w chan Request)
@@ -42,7 +40,7 @@ func (c *ConcurrentEngine) Run(seeds ...Request) {
 	for _, r := range seeds {
 		c.Scheduler.Submit(r)
 	}
-	//从out中获取result，对于item就打印即可，对于request，就继续分配
+	//从out中获取result 对于request，就继续分配
 	for {
 		result := <-out
 
@@ -64,15 +62,10 @@ func createWorker(in chan Request, out chan<- ParseResult, ready ReadyNotifier) 
 	go func() {
 		for {
 			//r := <-in
-			//log.Printf("Fetching  %s\n", r.Url)
-			//// 抓取
-			//contents, err := fetcher.Fetcher(r.Url)
+			//result, err :=worker(r)
 			//if err != nil {
-			//	log.Printf("Fetcher: error fetching url %s %v", r.Url, err)
 			//	continue
 			//}
-			//// 解析
-			//parseResult := r.ParserFunc(contents)
 			//out <- parseResult
 
 			//需要让scheduler知道已经就绪了

@@ -25,17 +25,20 @@ var httpClient = &http.Client{
 	},
 	Timeout: timeout,
 }
+
 /*
 fetcher：根据url获取对应的数据
- */
+*/
 func Fetcher(url string) ([]byte, error) {
 	request, _ := http.NewRequest(http.MethodGet, url, nil)
 	request.Header.Add("User-Agent",
 		"Mozilla/5.0 (iPhone; CPU iPhone OS 11_0 like Mac OS X) AppleWebKit/604.1.38 (KHTML, like Gecko) Version/11.0 Mobile/15A372 Safari/604.1")
 	resp, err := httpClient.Do(request)
-	if err != nil {
+	if err != nil || resp == nil {
 		log.Print(err)
+		return nil, err
 	}
+
 	defer func() {
 		switch p := recover(); p.(type) {
 		case nil:

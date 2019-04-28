@@ -38,6 +38,7 @@ func (s *SimpleEngine) Run(seeds ...Request) {
 	}
 }
 
+//干抓取和解析工作
 func worker(r Request) (ParseResult, error) {
 	log.Printf("Fetching  %s\n", r.Url)
 	// 抓取
