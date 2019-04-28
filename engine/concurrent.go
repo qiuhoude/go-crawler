@@ -1,7 +1,5 @@
 package engine
 
-import "log"
-
 type ReadyNotifier interface {
 	WorkerReady(w chan Request)
 }
@@ -17,7 +15,8 @@ type Scheduler interface {
 // 有点类似java中写的各种manager
 type ConcurrentEngine struct {
 	Scheduler   Scheduler
-	WorkerCount int //worker的数量,可进行外部配置
+	WorkerCount int //worker的数量 就是配置worker协程的数量
+	ItemChan    chan interface{}
 }
 
 func (c *ConcurrentEngine) Run(seeds ...Request) {
@@ -40,13 +39,20 @@ func (c *ConcurrentEngine) Run(seeds ...Request) {
 	for _, r := range seeds {
 		c.Scheduler.Submit(r)
 	}
+	//itemCount := 0
 	//从out中获取result 对于request，就继续分配
 	for {
 		result := <-out
 
-		// TODO 此处只是用于打印,之后可以存储数据库
+		//   此处只是用于打印,之后可以存储数据库
 		for _, item := range result.Items {
-			log.Printf("Got item %v", item)
+			//log.Printf("Got %d  item %v", itemCount, item)
+			//itemCount++
+
+			go func(it interface{}) {
+				c.ItemChan <- it
+			}(item)
+
 		}
 		for _, r := range result.Requests {
 			c.Scheduler.Submit(r) //提交余下的种子

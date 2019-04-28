@@ -3,7 +3,6 @@ package parser
 import (
 	"crawler/engine"
 	"crawler/model"
-	"fmt"
 	"github.com/bitly/go-simplejson"
 	"log"
 	"regexp"
@@ -13,6 +12,7 @@ var profileRe = regexp.MustCompile(`<script>window.__INITIAL_STATE__=(.+);\(func
 
 func ParseProfile(contents []byte, name string) engine.ParseResult {
 	match := profileRe.FindSubmatch(contents)
+	result := engine.ParseResult{}
 	if len(match) >= 2 {
 		json := match[1]
 		//fmt.Printf("%s\n", json)
@@ -23,9 +23,10 @@ func ParseProfile(contents []byte, name string) engine.ParseResult {
 		profile.Name = name
 		//bytes, _ := json2.Marshal(profile)
 		//fmt.Println(string(bytes))
-		fmt.Println(profile)
+		//fmt.Println(profile)
+		result.Items = append(result.Items, profile)
 	}
-	return engine.ParseResult{}
+	return result
 }
 
 func parseJson(json []byte) *model.Profile {

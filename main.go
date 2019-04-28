@@ -3,6 +3,7 @@ package main
 import (
 	"crawler/engine"
 	"crawler/parser"
+	"crawler/persist"
 	"crawler/scheduler"
 )
 
@@ -17,6 +18,7 @@ func main() {
 		//Scheduler:   &scheduler.SimpleScheduler{},
 		Scheduler:   &scheduler.QueuedScheduler{},
 		WorkerCount: 100,
+		ItemChan:    persist.ItemSaver(),
 	}
 	concurrentEngine.Run(engine.Request{
 		Url:        url,
