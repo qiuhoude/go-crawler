@@ -26,5 +26,6 @@ func TestParseProfile(t *testing.T) {
 		t.Error(err)
 		t.Fail()
 	}
- 	ParseProfile(contents)
+ 	ParseProfile(contents,"")
+
 }
