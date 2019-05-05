@@ -6,6 +6,7 @@ import (
 	"github.com/bitly/go-simplejson"
 	"log"
 	"regexp"
+	"strings"
 )
 
 var profileRe = regexp.MustCompile(`<script>window.__INITIAL_STATE__=(.+);\(function`)
@@ -18,13 +19,13 @@ func ParseProfile(contents []byte, name string) engine.ParseResult {
 		//fmt.Printf("%s\n", json)
 		profile := parseJson(json)
 		if profile == nil {
-			return engine.ParseResult{}
+			return result
 		}
 		profile.Name = name
 		//bytes, _ := json2.Marshal(profile)
 		//fmt.Println(string(bytes))
 		//fmt.Println(profile)
-		result.Items = append(result.Items, profile)
+		result.Items = append(result.Items, *profile)
 	}
 	return result
 }
@@ -73,6 +74,25 @@ func parseJson(json []byte) *model.Profile {
 				profile.Occupation = e
 			case 8:
 				profile.Education = e
+			}
+		}
+	}
+
+	infos2, err := res.Get("objectInfo").Get("detailInfo").Array()
+
+	for _, v := range infos2 {
+		/*
+				"detailInfo": ["汉族", "籍贯:江苏宿迁", "体型:富线条美", "不吸烟", "不喝酒", "租房", "未买车", "没有小孩", "是否想要孩子:想要孩子", "何时结婚:认同闪婚"],
+			   因为每个 每个用户的detailInfo数据不同，我们可以通过提取关键字来判断
+		*/
+		if e, ok := v.(string); ok {
+			//fmt.Println(k, "--->", e)
+			if strings.Contains(e, "族") {
+				profile.Hukou = e
+			} else if strings.Contains(e, "房") {
+				profile.House = e
+			} else if strings.Contains(e, "车") {
+				profile.Car = e
 			}
 		}
 	}

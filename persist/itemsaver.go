@@ -2,6 +2,8 @@ package persist
 
 import (
 	"context"
+	"crawler/model"
+	"fmt"
 	"github.com/olivere/elastic/v7"
 	"log"
 )
@@ -18,10 +20,11 @@ func ItemSaver() chan interface{} {
 			item := <-out
 			log.Printf("Item Saver: Got %d  item : %v", itemCount, item)
 			itemCount++
-
-			_, err := save(item)
-			if err != nil {
-				log.Printf("Item Saver :error saving item %v : %v ", item, err)
+			if p, ok := item.(model.Profile); ok {
+				_, err := save(p)
+				if err != nil {
+					log.Printf("Item Saver :error saving item %v : %v ", item, err)
+				}
 			}
 		}
 
@@ -40,14 +43,14 @@ func save(item interface{}) (id string, err error) {
 	}
 
 	resp, err := client.Index(). //存储数据，可以添加或者修改，要看id是否存在
-		Index("datint_profile").
-		BodyJson(item).
-		Do(context.Background())
+					Index("datint_profile").
+					BodyJson(item).
+					Do(context.Background())
 
 	if err != nil {
 		//log.Println(err)
 		return "", err
 	}
-	//fmt.Printf("%+v", resp) //格式化输出结构体对象的时候包含了字段名称
+	fmt.Printf("%+v", resp) //格式化输出结构体对象的时候包含了字段名称
 	return resp.Id, nil
 }
