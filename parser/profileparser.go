@@ -6,26 +6,32 @@ import (
 	"github.com/bitly/go-simplejson"
 	"log"
 	"regexp"
+	"strconv"
 	"strings"
 )
 
 var profileRe = regexp.MustCompile(`<script>window.__INITIAL_STATE__=(.+);\(function`)
 
-func ParseProfile(contents []byte, name string) engine.ParseResult {
+func ParseProfile(contents []byte, url string, name string) engine.ParseResult {
 	match := profileRe.FindSubmatch(contents)
 	result := engine.ParseResult{}
 	if len(match) >= 2 {
-		json := match[1]
-		//fmt.Printf("%s\n", json)
-		profile := parseJson(json)
+		jsonStr := match[1]
+		//fmt.Printf("%s\n", jsonStr)
+		profile := parseJson(jsonStr)
 		if profile == nil {
 			return result
 		}
-		profile.Name = name
-		//bytes, _ := json2.Marshal(profile)
+		//profile.Name = name
+		//bytes, _ := json.Marshal(profile)
 		//fmt.Println(string(bytes))
 		//fmt.Println(profile)
-		result.Items = append(result.Items, *profile)
+		result.Items = append(result.Items, engine.Item{
+			Url:     url,
+			Id:      profile.UserId,
+			Index:   "datint_profile",
+			PayLoad: *profile,
+		})
 	}
 	return result
 }
@@ -44,10 +50,11 @@ func parseJson(json []byte) *model.Profile {
 
 	var profile model.Profile
 	// 名字
-	//nick, err := objInfo.Get("nickname").String()
-	//if err == nil {
-	//	profile.Name = nick
-	//}
+	nick, err := objInfo.Get("nickname").String()
+	if err == nil {
+		profile.Name = nick
+	}
+	// 性别
 	gender, err := objInfo.Get("genderString").String()
 	if err == nil {
 		profile.Gender = gender
@@ -95,6 +102,11 @@ func parseJson(json []byte) *model.Profile {
 				profile.Car = e
 			}
 		}
+	}
+
+	//id
+	if id, err := res.Get("objectInfo").Get("memberID").Int(); err == nil {
+		profile.UserId = strconv.Itoa(id)
 	}
 	return &profile
 }

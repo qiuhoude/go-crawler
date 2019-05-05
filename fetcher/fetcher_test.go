@@ -6,7 +6,7 @@ import (
 
 func TestFetcher(t *testing.T) {
 
-	contents, err := Fetcher("http://album.zhenai.com/u/108448601")
+	contents, err := Fetch("http://album.zhenai.com/u/108448601")
 	if err != nil {
 		t.Error(err)
 		t.Fail()

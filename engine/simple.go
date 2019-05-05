@@ -20,9 +20,9 @@ func (s *SimpleEngine) Run(seeds ...Request) {
 		requests = requests[1:]
 		/*
 			log.Printf("Fetching  %s\n", r.Url)
-			contents, err := fetcher.Fetcher(r.Url)
+			contents, err := fetcher.Fetch(r.Url)
 			if err != nil {
-			log.Printf("Fetcher: error fetching url %s %v", r.Url, err)
+			log.Printf("Fetch: error fetching url %s %v", r.Url, err)
 			continue
 			}
 			parseResult := r.ParserFunc(contents)
@@ -42,9 +42,9 @@ func (s *SimpleEngine) Run(seeds ...Request) {
 func worker(r Request) (ParseResult, error) {
 	log.Printf("Fetching  %s\n", r.Url)
 	// 抓取
-	contents, err := fetcher.Fetcher(r.Url)
+	contents, err := fetcher.Fetch(r.Url)
 	if err != nil {
-		log.Printf("Fetcher: error fetching url %s %v", r.Url, err)
+		log.Printf("Fetch: error fetching url %s %v", r.Url, err)
 		return ParseResult{}, err
 	}
 	// 解析

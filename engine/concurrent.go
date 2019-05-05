@@ -16,7 +16,7 @@ type Scheduler interface {
 type ConcurrentEngine struct {
 	Scheduler   Scheduler
 	WorkerCount int //worker的数量 就是配置worker协程的数量
-	ItemChan    chan interface{}
+	ItemChan    chan Item
 }
 
 func (c *ConcurrentEngine) Run(seeds ...Request) {
@@ -48,8 +48,7 @@ func (c *ConcurrentEngine) Run(seeds ...Request) {
 		for _, item := range result.Items {
 			//log.Printf("Got %d  item %v", itemCount, item)
 			//itemCount++
-
-			go func(it interface{}) {
+			go func(it Item) {
 				c.ItemChan <- it
 			}(item)
 

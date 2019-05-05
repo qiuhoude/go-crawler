@@ -1,6 +1,7 @@
 package parser
 
 import (
+	"crawler/fetcher"
 	"io/ioutil"
 	"testing"
 )
@@ -20,12 +21,11 @@ func TestParseCityList(t *testing.T) {
 	}
 }
 
-func TestParseProfile(t *testing.T) {
-	contents, err := ioutil.ReadFile("user_test_data.html")
-	if err != nil {
-		t.Error(err)
-		t.Fail()
+func TestParseCityList4Json(t *testing.T) {
+	contents, _ := fetcher.Fetch("http://www.zhenai.com/zhenghun")
+	parseResult := ParseCityList4Json(contents)
+	const resultSize = 470
+	if len(parseResult.Requests) != 470 {
+		t.Errorf("result should have %d requests, but had %d", resultSize, len(parseResult.Requests))
 	}
- 	ParseProfile(contents,"")
-
 }

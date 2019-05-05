@@ -2,6 +2,7 @@ package persist
 
 import (
 	"context"
+	"crawler/engine"
 	"crawler/model"
 	"encoding/json"
 	"github.com/olivere/elastic/v7"
@@ -11,10 +12,10 @@ import (
 // 测试es获取
 func TestGetItem(t *testing.T) {
 	//从ElasticSearch中获取，根据id
-	client, err := elastic.NewClient(elastic.SetSniff(false))
+	client, err := elastic.NewClient(elastic.SetSniff(false), elastic.SetURL(EsUrl))
 	resp, err := client.Get().
 		Index("datint_profile").
-		Id("mIE6iGoBflr81gDiPCuI").
+		Id("1409115162").
 		Do(context.Background())
 
 	if err != nil {
@@ -22,15 +23,6 @@ func TestGetItem(t *testing.T) {
 	}
 
 	t.Logf("%s", resp.Source) //打印
-
-	//反序列化
-	var actual model.Profile
-	err = json.Unmarshal([]byte(resp.Source), &actual)
-
-	if err != nil {
-		panic(err)
-	}
-	t.Logf("结果 %v", actual)
 
 }
 func TestItemSaver(t *testing.T) {
@@ -47,16 +39,23 @@ func TestItemSaver(t *testing.T) {
 		Occupation: "职业技术教师",
 		Education:  "高中及以下",
 	}
-	id, err := save(profile)
+	item := engine.Item{
+		Url:     "http://album.zhenai.com/u/1214814888",
+		Index:   "datint_profile",
+		Id:      "1214814888",
+		PayLoad: profile,
+	}
+
+	id, err := save(item)
 	t.Logf("id = %s", id)
 	if err != nil {
 		t.Fatal(err)
 	}
 	//从ElasticSearch中获取，根据id
-	client, err := elastic.NewClient(elastic.SetSniff(false))
+	client, err := elastic.NewClient(elastic.SetSniff(false), elastic.SetURL(EsUrl))
 	resp, err := client.Get().
-		Index("datint_profile").
-		Id(id).
+		Index(item.Index).
+		Id(item.Id).
 		Do(context.Background())
 
 	if err != nil {
@@ -66,15 +65,18 @@ func TestItemSaver(t *testing.T) {
 	t.Logf("%s", resp.Source) //打印
 
 	//反序列化
-	var actual model.Profile
+	var actual engine.Item
 	err = json.Unmarshal([]byte(resp.Source), &actual)
 
 	if err != nil {
-		panic(err)
+		t.Fatal(err)
 	}
 
+	obj, _ := model.FromJsonObj(actual.PayLoad)
+	actual.PayLoad = obj
+
 	//断言
-	if actual != profile {
+	if actual != item {
 		t.Errorf("got %v; expected %v", actual, profile)
 	}
 

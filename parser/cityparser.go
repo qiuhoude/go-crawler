@@ -6,7 +6,7 @@ import (
 )
 
 var (
-	cityRe    = regexp.MustCompile(`<a href="(http://album.zhenai.com/u/[0-9]+)"[^>]*>([^<]+)</a>`)
+	cityRe = regexp.MustCompile(`<a href="(http://album.zhenai.com/u/[0-9]+)"[^>]*>([^<]+)</a>`)
 	//cityUrlRe = regexp.MustCompile(`<a href="(http://www.zhenai.com/zhenghun/[\w]+/[0-9]+)"[^>]*>[\s]*下一页[\s]*</a>`)
 	cityUrlRe = regexp.MustCompile(`<a href="(http://www.zhenai.com/zhenghun/[\w]+)`)
 )
@@ -18,11 +18,12 @@ func ParseCity(contents []byte) engine.ParseResult {
 	result := engine.ParseResult{}
 	for _, c := range all {
 		name := string(c[2])
-		result.Items = append(result.Items, name) // 用户名称
+		//result.Items = append(result.Items, name) // 用户名称
+		url := string(c[1])
 		result.Requests = append(result.Requests, engine.Request{
-			Url: string(c[1]),
+			Url: url,
 			ParserFunc: func(bytes []byte) engine.ParseResult {
-				return ParseProfile(bytes, name)
+				return ParseProfile(bytes, url, name)
 			},
 		})
 	}
