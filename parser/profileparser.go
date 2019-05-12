@@ -12,6 +12,8 @@ import (
 
 var profileRe = regexp.MustCompile(`<script>window.__INITIAL_STATE__=(.+);\(function`)
 
+const ES_INDEX = "datint_profile"
+
 func ParseProfile(contents []byte, url string, name string) engine.ParseResult {
 	match := profileRe.FindSubmatch(contents)
 	result := engine.ParseResult{}
@@ -29,7 +31,7 @@ func ParseProfile(contents []byte, url string, name string) engine.ParseResult {
 		result.Items = append(result.Items, engine.Item{
 			Url:     url,
 			Id:      profile.UserId,
-			Index:   "datint_profile",
+			Index:   ES_INDEX,
 			PayLoad: *profile,
 		})
 	}

@@ -46,13 +46,14 @@ func TestItemSaver(t *testing.T) {
 		PayLoad: profile,
 	}
 
-	id, err := save(item)
+	client, err := elastic.NewClient(elastic.SetSniff(false), elastic.SetURL(EsUrl))
+	id, err := save(client, item)
+
 	t.Logf("id = %s", id)
 	if err != nil {
 		t.Fatal(err)
 	}
 	//从ElasticSearch中获取，根据id
-	client, err := elastic.NewClient(elastic.SetSniff(false), elastic.SetURL(EsUrl))
 	resp, err := client.Get().
 		Index(item.Index).
 		Id(item.Id).

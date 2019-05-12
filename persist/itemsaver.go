@@ -9,14 +9,20 @@ import (
 	"log"
 )
 
-const EsUrl = "http://192.168.0.101:9200"
+const EsUrl = "http://localhost:9200"
 
 //用于存储Item
 
 // 创建chan
-func ItemSaver() chan engine.Item {
+func ItemSaver() (chan engine.Item, error) {
 	out := make(chan engine.Item)
+	// 关闭内网的sniff
+	client, err := elastic.NewClient(elastic.SetSniff(false), elastic.SetURL(EsUrl))
+	if err != nil {
+		return nil, err
+	}
 
+	// 创建一个协程进行数据保存
 	go func() {
 		itemCount := 0
 		for {
@@ -25,7 +31,7 @@ func ItemSaver() chan engine.Item {
 			itemCount++
 
 			//存储到es中
-			_, err := save(item)
+			_, err := save(client, item)
 			if err != nil {
 				log.Printf("Item Saver :error saving item %v : %v ", item, err)
 			}
@@ -33,19 +39,11 @@ func ItemSaver() chan engine.Item {
 		}
 
 	}()
-	return out
+	return out, nil
 }
 
 // 保存item
-func save(item engine.Item) (id string, err error) {
-	// 关闭内网的sniff
-	client, err := elastic.NewClient(elastic.SetSniff(false), elastic.SetURL(EsUrl))
-
-	if err != nil {
-		//log.Println(err)
-		return "", err
-	}
-
+func save(client *elastic.Client, item engine.Item) (id string, err error) {
 	if item.Index == "" {
 		return "", errors.New("must supply Index ...")
 	}

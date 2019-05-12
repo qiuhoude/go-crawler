@@ -29,7 +29,7 @@ func (c *ConcurrentEngine) Run(seeds ...Request) {
 	c.Scheduler.Run()
 
 	for i := 0; i < c.WorkerCount; i++ {
-		// 创建worker,此处是创建多个协程
+		// 创建worker,此处是创建多个协程 , 进行爬取和解析
 		//createWorker(in, out)
 		//createWorker(out, c.Scheduler)
 		createWorker(c.Scheduler.WorkerChan(), out, c.Scheduler)
@@ -63,7 +63,6 @@ func (c *ConcurrentEngine) Run(seeds ...Request) {
 //func createWorker(out chan<- ParseResult, s Scheduler) {
 func createWorker(in chan Request, out chan<- ParseResult, ready ReadyNotifier) {
 	//in := make(chan Request)
-
 	go func() {
 		for {
 			//r := <-in
