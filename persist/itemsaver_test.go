@@ -47,7 +47,7 @@ func TestItemSaver(t *testing.T) {
 	}
 
 	client, err := elastic.NewClient(elastic.SetSniff(false), elastic.SetURL(EsUrl))
-	id, err := save(client, item)
+	id, err := Save(client, item)
 
 	t.Logf("id = %s", id)
 	if err != nil {

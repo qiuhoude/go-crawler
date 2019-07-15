@@ -31,7 +31,7 @@ func ItemSaver() (chan engine.Item, error) {
 			itemCount++
 
 			//存储到es中
-			_, err := save(client, item)
+			_, err := Save(client, item)
 			if err != nil {
 				log.Printf("Item Saver :error saving item %v : %v ", item, err)
 			}
@@ -43,7 +43,7 @@ func ItemSaver() (chan engine.Item, error) {
 }
 
 // 保存item
-func save(client *elastic.Client, item engine.Item) (id string, err error) {
+func Save(client *elastic.Client, item engine.Item) (id string, err error) {
 	if item.Index == "" {
 		return "", errors.New("must supply Index ...")
 	}

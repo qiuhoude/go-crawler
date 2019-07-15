@@ -13,3 +13,7 @@ func TestFetcher(t *testing.T) {
 	}
 	t.Logf("%s", string(contents))
 }
+
+func TestFetchColly(t *testing.T) {
+	FetchColly()
+}

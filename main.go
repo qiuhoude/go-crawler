@@ -1,10 +1,12 @@
 package main
 
 import (
+	"crawler/distributed/config"
+	"crawler/distributed/persist/client"
 	"crawler/engine"
 	"crawler/parser"
-	"crawler/persist"
 	"crawler/scheduler"
+	"fmt"
 	"log"
 )
 
@@ -15,7 +17,8 @@ func main() {
 	//	Url:        url,
 	//	ParserFunc: parser.ParseCityList,
 	//})
-	itemSaver, err := persist.ItemSaver()
+	//itemSaver, err := persist.ItemSaver()
+	itemSaver, err := client.ItemSaver(fmt.Sprintf(":%d", config.ItemSaverPort))
 	if err != nil {
 		log.Print(err)
 		panic(err)
