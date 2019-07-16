@@ -6,7 +6,7 @@ import (
 )
 
 //干抓取和解析工作
-func worker(r Request) (ParseResult, error) {
+func Worker(r Request) (ParseResult, error) {
 	log.Printf("Fetching  %s\n", r.Url)
 	// 抓取
 	contents, err := fetcher.Fetch(r.Url)
@@ -15,6 +15,7 @@ func worker(r Request) (ParseResult, error) {
 		return ParseResult{}, err
 	}
 	// 解析
-	parseResult := r.ParserFunc(contents)
+	//parseResult := r.ParserFunc(contents)
+	parseResult := r.Parser.Parse(contents, r.Url)
 	return parseResult, nil
 }

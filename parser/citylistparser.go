@@ -1,6 +1,7 @@
 package parser
 
 import (
+	"crawler/distributed/config"
 	"crawler/engine"
 	"github.com/bitly/go-simplejson"
 	"log"
@@ -13,28 +14,28 @@ var cityList4JsonRe = regexp.MustCompile(`<script>window.__INITIAL_STATE__=(.+);
 /*
 解析城市列表
 */
-func ParseCityList(contents []byte) engine.ParseResult {
+func ParseCityList(contents []byte, _ string) engine.ParseResult {
 	all := cityListRe.FindAllSubmatch(contents, -1)
 
 	result := engine.ParseResult{}
 	for _, c := range all {
 		//result.Items = append(result.Items, string(c[2])) //城市名称
 		result.Requests = append(result.Requests, engine.Request{
-			Url:        string(c[1]),
-			ParserFunc: ParseCity,
+			Url:    string(c[1]),
+			Parser: engine.NewFuncParser(ParseCity, config.ParseCity),
 		})
 	}
 	return result
 }
 
-func ParseCityList4Json(contents []byte) engine.ParseResult {
+func ParseCityList4Json(contents []byte, _ string) engine.ParseResult {
 	jsonb := cityList4JsonRe.FindSubmatch(contents)
 	all := parseJsonCityList(jsonb[1])
 	result := engine.ParseResult{}
 	for _, c := range all {
 		result.Requests = append(result.Requests, engine.Request{
-			Url:        string(c[1]),
-			ParserFunc: ParseCity,
+			Url:    string(c[1]),
+			Parser: engine.NewFuncParser(ParseCity, config.ParseCity),
 		})
 	}
 	return result

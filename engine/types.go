@@ -25,6 +25,7 @@ type Item struct {
 	PayLoad interface{}
 }
 
+// 序列化和反序列化接口
 type Parser interface {
 	Parse(contents []byte, url string) ParseResult
 	Serialize() (name string, args interface{})
@@ -40,4 +41,26 @@ func (NilParser) Parse(_ []byte, _ string) ParseResult {
 
 func (NilParser) Serialize() (name string, args interface{}) {
 	return "NilParser", nil
+}
+
+type ParserFunc func(contents []byte, url string) ParseResult
+
+type FuncParser struct {
+	parserFunc ParserFunc
+	name       string
+}
+
+func (f *FuncParser) Parse(contents []byte, url string) ParseResult {
+	return f.parserFunc(contents, url)
+}
+
+func (f *FuncParser) Serialize() (name string, args interface{}) {
+	return f.name, nil
+}
+
+func NewFuncParser(p ParserFunc, name string) *FuncParser {
+	return &FuncParser{
+		parserFunc: p,
+		name:       name,
+	}
 }

@@ -11,7 +11,7 @@ func TestParseCityList(t *testing.T) {
 	if err != nil {
 		t.Fail()
 	}
-	parseResult := ParseCityList(contents)
+	parseResult := ParseCityList(contents, "")
 	const resultSize = 470
 	if len(parseResult.Requests) != 470 {
 		t.Errorf("result should have %d requests, but had %d", resultSize, len(parseResult.Requests))

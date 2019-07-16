@@ -19,7 +19,7 @@ func ItemSaver(host string) (chan engine.Item, error) {
 		itemCount := 0
 		for {
 			item := <-out
-			log.Printf("Item Saver: Got %d  item : %v\n", itemCount, item)
+			//log.Printf(" 发送保存数据 已发%d个 :\n", itemCount)
 			itemCount++
 
 			//调用Rpc 来保存item

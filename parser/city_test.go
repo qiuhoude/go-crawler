@@ -10,7 +10,7 @@ func TestCityParser(t *testing.T) {
 	if err != nil {
 		t.Fail()
 	}
-	parseResult := ParseCity(contents)
+	parseResult := ParseCity(contents, "")
 	for _, c := range parseResult.Items {
 		t.Logf("Get user nick is %q", c)
 	}

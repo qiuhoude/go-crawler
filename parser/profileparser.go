@@ -1,6 +1,7 @@
 package parser
 
 import (
+	"crawler/distributed/config"
 	"crawler/engine"
 	"crawler/model"
 	"github.com/bitly/go-simplejson"
@@ -111,4 +112,23 @@ func parseJson(json []byte) *model.Profile {
 		profile.UserId = strconv.Itoa(id)
 	}
 	return &profile
+}
+
+type ProfileParser struct {
+	userName string
+}
+
+func (p *ProfileParser) Parse(contents []byte, url string) engine.ParseResult {
+	return ParseProfile(contents, url, p.userName)
+}
+
+func (p *ProfileParser) Serialize() (name string, args interface{}) {
+	//return "ProfileParser", p.userName
+	return config.ParseProfile, p.userName
+}
+
+func NewProfileParser(name string) *ProfileParser {
+	return &ProfileParser{
+		userName: name,
+	}
 }

@@ -2,8 +2,8 @@ package config
 
 const (
 	// Service端口
-	ItemSaverPort = 7788 //ItemSaver RPC远程服务的端口
-	WorkerPort0   = 5566 //Worker
+	ItemSaverPort = 7789 //ItemSaver RPC远程服务的端口
+	WorkerPort0   = 5567 //Worker
 
 	//RPC远程服务要调用的方法名称
 	ItemSaverRpc    = "ItemSaveService.Save"
